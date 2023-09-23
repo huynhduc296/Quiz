@@ -80,10 +80,13 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
         timeAnswers: time,
         answerAts: ans
     })
-
+    var s = await Score.findOne({ userId: req.body.userId, exam: exam });
     res.status(200).json({
         status: 'success',
         data: {
+            numberOfSentences : exam.questions.length,
+            rightSentence : score,
+            userName : req.body.userName
         },
     });
 });
