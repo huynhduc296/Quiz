@@ -15,7 +15,6 @@ exports.createQuiz = catchAsync(async (req, res, next) => {
         });
         questions.push(newQuestion);
     }
-    console.log('bbbbbbbbbbbbbbbbbbbbbbb')
     const exams = await Exam.create({
         name: req.body.name,
         description: req.body.description,
@@ -30,20 +29,54 @@ exports.createQuiz = catchAsync(async (req, res, next) => {
 })
 
 
-exports.getExam = catchAsync(async (req, res, next) => {
-    let examQuery = Exam.find().populate({ path: 'questions' });
-    const exam = await examQuery;
-
-    if (!exam) {
-        return next(new AppError('No document found with that ID', 404));
+async function getExam(req, res) {
+    try {
+        const exam = await Exam.findOne().populate({ path: 'questions' });
+        
+        if (!exam) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'No document found with that ID',
+            });
+        }
+        
+        res.status(200).json({
+            status: 'success',
+            data: {
+                exam,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+        });
     }
-    res.status(200).json({
-        status: 'success',
-        data: {
-            exam,
-        },
-    });
+}
+
+exports.checkWhichUserHasPlayed = catchAsync(async (req, res, next) => {
+    try {
+        const s = await Score.findOne({ userId: req.params.userId });
+
+        if (!s) {
+            // Gọi hàm getExam và trả về kết quả từ hàm đó
+            return await getExam(req, res);
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data: s,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+        });
+    }
 });
+
 
 
 exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
@@ -64,21 +97,15 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
     }
     var currentTime = Date.now();
 
-    var sc = [];
-    sc.push(score);
-    var time = [];
-    time.push(req.body.timeAnswer);
-    var ans = [];
-    ans.push(currentTime);
     s = await Score.create({
         userName: req.body.userName,
         phone : req.body.phone,
         userId: req.body.userId,
         exam: exam,
         highestScore: score,
-        scores: sc,
-        timeAnswers: time,
-        answerAts: ans
+        scores: score,
+        timeAnswers: req.body.timeAnswer,
+        answerAts: currentTime
     })
     var s = await Score.findOne({ userId: req.body.userId, exam: exam });
     res.status(200).json({
@@ -91,3 +118,25 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
     });
 });
 
+
+exports.quizRankings = catchAsync(async (req, res, next) => {
+    const scores = await Score.find();
+
+    scores.sort((a, b) => {
+        if (a.highestScore !== b.highestScore) {
+            return b.highestScore - a.highestScore; // Sắp xếp theo highestScore giảm dần
+        } else if (a.timeAnswers !== b.timeAnswers) {
+            return a.timeAnswers - b.timeAnswers; // Nếu highestScore bằng nhau, sắp xếp theo timeAnswers tăng dần
+        } else {
+            // So sánh theo thời gian answerAts (tăng dần)
+            return new Date(a.answerAts) - new Date(b.answerAts);
+        }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: scores,
+        },
+    });
+});

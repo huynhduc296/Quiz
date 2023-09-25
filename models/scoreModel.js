@@ -25,28 +25,25 @@ const scoreSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    scores: [
+    scores: 
       {
         type: Number,
         default: 0
-      }
-    ],
-    timeAnswers: [
+      },
+    timeAnswers: 
       {
         type: Number,
         default: 0
-      }
-    ],
+      },
     currentPercent:{
       type: Number,
       default: 0
     },
-    answerAts: [
+    answerAts:
       {
         type: Date,
         default: Date.now()
-      }
-    ],
+      },
     createdAt: {
       type: Date,
       default: Date.now()
