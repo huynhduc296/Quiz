@@ -120,7 +120,9 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
 
 
 exports.quizRankings = catchAsync(async (req, res, next) => {
+    console.log('xxxxxxxxxxxxx')
     const scores = await Score.find();
+   
 
     scores.sort((a, b) => {
         if (a.highestScore !== b.highestScore) {

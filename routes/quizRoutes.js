@@ -3,6 +3,9 @@ const quizController = require('../controller/quizController');
 
 const router = express.Router()
 
+router
+    .route('/quizRankings')
+    .get(quizController.quizRankings)
 
 router
     .route('/')
@@ -18,9 +21,6 @@ router
     .route('/calculateScoreExamAndUpdate/:examId')
     .post(quizController.calculateScoreExamAndUpdate)
 
-router
-    .route('/quizRankings')
-    .get(quizController.quizRankings)
     
 
 module.exports = router;
