@@ -21,6 +21,10 @@ router
     .route('/calculateScoreExamAndUpdate/:examId')
     .post(quizController.calculateScoreExamAndUpdate)
 
+router
+    .route('/updateScore/:userId')
+    .patch(quizController.updateScore)
+
     
 
 module.exports = router;

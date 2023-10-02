@@ -18,7 +18,8 @@ exports.createQuiz = catchAsync(async (req, res, next) => {
     const exams = await Exam.create({
         name: req.body.name,
         description: req.body.description,
-        questions: questions
+        questions: questions,
+        passingScore : req.body.passingScore
     });
     res.status(200).json({
         status: 'success',
@@ -107,23 +108,27 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
         timeAnswers: req.body.timeAnswer,
         answerAts: currentTime
     })
+    if(score >= exam.passingScore){
+        var s = await Score.findByIdAndUpdate(s.id, {
+            checkCompleted : true
+        })
+    }
     var s = await Score.findOne({ userId: req.body.userId, exam: exam });
+
     res.status(200).json({
         status: 'success',
         data: {
             numberOfSentences : exam.questions.length,
             rightSentence : score,
-            userName : req.body.userName
+            userName : req.body.userName,
+            checkCompleted : s.checkCompleted
         },
     });
 });
 
 
 exports.quizRankings = catchAsync(async (req, res, next) => {
-    console.log('xxxxxxxxxxxxx')
-    const scores = await Score.find();
-   
-
+    const scores = await Score.find({checkCompleted : true});
     scores.sort((a, b) => {
         if (a.highestScore !== b.highestScore) {
             return b.highestScore - a.highestScore; // Sắp xếp theo highestScore giảm dần
@@ -142,3 +147,21 @@ exports.quizRankings = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+
+exports.updateScore = catchAsync(async (req, res, next) =>{
+    const scores = await Score.findOne({userId:req.params.userId});
+    console.log(scores)
+    if(scores.checkCompleted == true){
+        var s = await Score.findByIdAndUpdate(scores.id, {
+            userName: req.body.userName,
+            phone : req.body.phone,
+            favoriteGift : req.body.favoriteGift
+        })
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+        },
+    });
+})

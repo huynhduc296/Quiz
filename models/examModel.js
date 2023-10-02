@@ -5,6 +5,10 @@ const examSchema = new mongoose.Schema(
         type: String,
         required: [true, 'Exam must have a name'],
       },
+    passingScore :{
+      type : Number,
+      default : 15
+    },
     description: String,
     questions: [
         {

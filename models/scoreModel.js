@@ -12,8 +12,17 @@ const scoreSchema = new mongoose.Schema(
         type :Number,
         default: 0
     },
+    favoriteGift:{
+        type :Number,
+        default: 0
+    },
+    checkCompleted: {
+      type : Boolean,
+      default : false
+    },
     userId:{
         type: Number,
+        unique: true,
         required: [true, 'Please tell us combo name!']
     },
     exam: {
@@ -25,7 +34,7 @@ const scoreSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    scores: 
+    scores:
       {
         type: Number,
         default: 0
