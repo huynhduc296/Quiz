@@ -3,6 +3,8 @@ const quizController = require('../controller/quizController');
 
 const router = express.Router()
 
+quizController.quizRanhkingCronjob();
+
 router
     .route('/quizRankings')
     .get(quizController.quizRankings)
