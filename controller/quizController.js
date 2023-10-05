@@ -3,6 +3,28 @@ const AppError = require('./../utils/appError');
 const Question = require('../models/questionModel');
 const Exam = require('../models/examModel');
 const Score = require('../models/scoreModel');
+const Ranking = require('../models/ranKingModels');
+const CronJob = require('cron').CronJob;
+
+
+exports.quizRanhkingCronjob = async () => {
+    const job = new CronJob(
+      '10 15 * * *',
+      async () => {
+        try {
+          await updateRanhking();
+        } catch (error) {
+          console.error(error); // Log the error message
+          // Do something else if necessary
+        }
+      },
+      null,
+      true,
+      'Asia/Vientiane'
+    );
+    job.start();
+  };
+  
 
 exports.createQuiz = catchAsync(async (req, res, next) => {
     var questions = [];
@@ -126,9 +148,8 @@ exports.calculateScoreExamAndUpdate = catchAsync(async (req, res, next) => {
     });
 });
 
-
-exports.quizRankings = catchAsync(async (req, res, next) => {
-    const scores = await Score.find({checkCompleted : true});
+async function updateRanhking() {
+    const scores = await Score.find({ checkCompleted: true });
     scores.sort((a, b) => {
         if (a.highestScore !== b.highestScore) {
             return b.highestScore - a.highestScore; // Sắp xếp theo highestScore giảm dần
@@ -140,13 +161,56 @@ exports.quizRankings = catchAsync(async (req, res, next) => {
         }
     });
 
-    res.status(200).json({
-        status: 'success',
-        data: {
-            data: scores,
-        },
-    });
+
+    for (var i of scores) {
+        const score = await Score.findById(i)
+        const ranking = await Ranking.findOne({ score: score });
+
+        const index = scores.indexOf(i) + 1;
+        if (!ranking) {
+            var s = await Ranking.create({
+                score: score,
+                rank: index,
+            })
+        } else {
+            if (ranking.rank != index) {
+                var s = await Ranking.findByIdAndUpdate(ranking.id, {
+                    rank: index,
+                })
+            }
+
+        }
+    }
+    console.log('xxxxxxxxxxxxxxxxxxxx')
+}
+
+exports.quizRankings = catchAsync(async (req, res, next) => {
+    const page = req.query.page || 1; // Trang mặc định là trang 1 nếu không có truy vấn
+    const limit = req.query.limit || 10; // Số lượng kết quả trên mỗi trang mặc định là 10 nếu không có truy vấn
+
+    const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+
+    try {
+        const totalRecords = await Ranking.countDocuments();
+        const ranking = await Ranking.find()
+            .populate('score')
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                ranking,
+                currentPage: page,
+                totalPages: Math.ceil(totalRecords / limit),
+                totalRecords,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
 });
+
 
 
 exports.updateScore = catchAsync(async (req, res, next) =>{
