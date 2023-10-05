@@ -186,7 +186,7 @@ async function updateRanhking() {
 
 exports.quizRankings = catchAsync(async (req, res, next) => {
     const page = req.query.page || 1; // Trang mặc định là trang 1 nếu không có truy vấn
-    const limit = req.query.limit || 10; // Số lượng kết quả trên mỗi trang mặc định là 10 nếu không có truy vấn
+    const limit = req.query.limit || 100; // Số lượng kết quả trên mỗi trang mặc định là 10 nếu không có truy vấn
 
     const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
 
