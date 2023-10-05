@@ -9,7 +9,7 @@ const CronJob = require('cron').CronJob;
 
 exports.quizRanhkingCronjob = async () => {
     const job = new CronJob(
-      '10 15 * * *',
+      '*/30 * * * *',
       async () => {
         try {
           await updateRanhking();
@@ -181,7 +181,6 @@ async function updateRanhking() {
 
         }
     }
-    console.log('xxxxxxxxxxxxxxxxxxxx')
 }
 
 exports.quizRankings = catchAsync(async (req, res, next) => {
