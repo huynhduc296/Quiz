@@ -3,7 +3,7 @@ const AppError = require('./../utils/appError');
 const Question = require('../models/questionModel');
 const Exam = require('../models/examModel');
 const Score = require('../models/scoreModel');
-const Ranking = require('../models/ranKingModels');
+const Ranking = require('../models/rankingModel');
 const CronJob = require('cron').CronJob;
 
 
@@ -22,7 +22,7 @@ exports.quizRanhkingCronjob = async () => {
       true,
       'Asia/Vientiane'
     );
-    job.start();
+    job.start();   
   };
   
 
@@ -209,6 +209,17 @@ exports.quizRankings = catchAsync(async (req, res, next) => {
         next(error);
     }
 });
+
+exports.getRankingbyUser = catchAsync(async (req, res ,next) => {
+    const scores = await Score.findOne({userId:req.params.userId});
+    const ranking = await Ranking.findOne({ score: scores}).populate('score');
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data : ranking
+        },
+    });
+})
 
 
 

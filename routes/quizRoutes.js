@@ -24,6 +24,11 @@ router
     .post(quizController.calculateScoreExamAndUpdate)
 
 router
+    .route('/getRankingbyUser/:userId')
+    .get(quizController.getRankingbyUser)
+    
+
+router
     .route('/updateScore/:userId')
     .patch(quizController.updateScore)
 
