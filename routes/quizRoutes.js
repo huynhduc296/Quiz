@@ -1,37 +1,27 @@
-const express = require('express');
-const quizController = require('../controller/quizController');
+const express = require("express");
+const quizController = require("../controller/quizController");
 
-const router = express.Router()
+const router = express.Router();
 
 quizController.quizRanhkingCronjob();
 
-router
-    .route('/quizRankings')
-    .get(quizController.quizRankings)
+router.route("/quizRankings/:userId").get(quizController.quizRankings);
 
 router
-    .route('/')
-    // .get(quizController.getExam)
-    .post(quizController.createQuiz)
+  .route("/")
+  // .get(quizController.getExam)
+  .post(quizController.createQuiz);
 router
-    .route('/:userId')
-    // .get(quizController.getExam)
-    .get(quizController.checkWhichUserHasPlayed)
-    
-
- router
-    .route('/calculateScoreExamAndUpdate/:examId')
-    .post(quizController.calculateScoreExamAndUpdate)
+  .route("/:userId")
+  // .get(quizController.getExam)
+  .get(quizController.checkWhichUserHasPlayed);
 
 router
-    .route('/getRankingbyUser/:userId')
-    .get(quizController.getRankingbyUser)
-    
+  .route("/calculateScoreExamAndUpdate/:examId")
+  .post(quizController.calculateScoreExamAndUpdate);
 
-router
-    .route('/updateScore/:userId')
-    .patch(quizController.updateScore)
+router.route("/getRankingbyUser/:userId").get(quizController.getRankingbyUser);
 
-    
+router.route("/updateScore/:userId").patch(quizController.updateScore);
 
 module.exports = router;
