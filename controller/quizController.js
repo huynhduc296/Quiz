@@ -237,12 +237,23 @@ exports.updateScore = catchAsync(async (req, res, next) => {
 
 
 exports.getAllRanking = catchAsync(async (req, res, next) => {
-  const scores = await Score.find({ checkCompleted: true });
+  const page = parseInt(req.query.page) || 1; // Trang hiện tại, mặc định là trang 1
+  const limit = parseInt(req.query.limit) || 100; // Số lượng kết quả trên mỗi trang, mặc định là 10
+
+  const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+
+  const scores = await Score.find({ checkCompleted: true })
+    .skip(skip) // Bỏ qua các bản ghi trước trang hiện tại
+    .limit(limit) // Giới hạn số lượng kết quả trên mỗi trang
+    .exec();
+
   const listRank = [];
-  for(var i of scores){
-      const ranking = await Ranking.findOne({ score: i }).populate("score");
-      listRank.push(ranking)
+
+  for (var i of scores) {
+    const ranking = await Ranking.findOne({ score: i }).populate("score");
+    listRank.push(ranking);
   }
+
   res.status(200).json({
     status: "success",
     data: {
