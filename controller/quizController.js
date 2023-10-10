@@ -188,10 +188,12 @@ exports.quizRankings = catchAsync(async (req, res, next) => {
 
   try {
     const totalRecords = await Ranking.countDocuments();
+
     const ranking = await Ranking.find()
       .populate("score")
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ rank: 1 });
 
     res.status(200).json({
       status: "success",
