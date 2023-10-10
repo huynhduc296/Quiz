@@ -5,7 +5,8 @@ const router = express.Router();
 
 quizController.quizRanhkingCronjob();
 
-router.route("/quizRankings/:userId").get(quizController.quizRankings);
+router
+  .route("/quizRankings/:userId").get(quizController.quizRankings);
 
 router
   .route("/")
@@ -17,11 +18,17 @@ router
   .get(quizController.checkWhichUserHasPlayed);
 
 router
+  .route("/statistical/getAllRanking")
+  .get(quizController.getAllRanking);
+
+router
   .route("/calculateScoreExamAndUpdate/:examId")
   .post(quizController.calculateScoreExamAndUpdate);
 
-router.route("/getRankingbyUser/:userId").get(quizController.getRankingbyUser);
+router.route("/getRankingbyUser/:userId")
+  .get(quizController.getRankingbyUser);
 
-router.route("/updateScore/:userId").patch(quizController.updateScore);
+router.route("/updateScore/:userId")
+  .patch(quizController.updateScore);
 
 module.exports = router;

@@ -234,3 +234,19 @@ exports.updateScore = catchAsync(async (req, res, next) => {
     data: {},
   });
 });
+
+
+exports.getAllRanking = catchAsync(async (req, res, next) => {
+  const scores = await Score.find({ checkCompleted: true });
+  const listRank = [];
+  for(var i of scores){
+      const ranking = await Ranking.findOne({ score: i }).populate("score");
+      listRank.push(ranking)
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: listRank,
+    },
+  });
+});
