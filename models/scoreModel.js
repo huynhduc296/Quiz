@@ -21,7 +21,7 @@ const scoreSchema = new mongoose.Schema(
       default : false
     },
     userId:{
-        type: Number,
+        type: String,
         unique: true,
         required: [true, 'Please tell us combo name!']
     },
